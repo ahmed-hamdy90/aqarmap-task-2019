@@ -4,9 +4,13 @@ namespace App\Controller;
 
 use App\Controller\Abstracts\AbstractAqarmapTaskController;
 use App\Entity\Article;
-use App\Entity\Category;
 use App\Entity\User;
+use App\Exception\NotFoundException;
 use App\Form\ArticleType;
+use App\Service\AqarmapTaskAuthenticationService;
+use App\Service\ArticleService;
+use App\Service\CategoryService;
+use App\Service\Interfaces\ActiveRecordInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -18,6 +22,34 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class ArticleController extends AbstractAqarmapTaskController
 {
     /**
+     * @var ArticleService
+     */
+    private $articleService;
+
+    /**
+     * @var CategoryService
+     */
+    private $categoryService;
+
+    /**
+     * @var AqarmapTaskAuthenticationService
+     */
+    private $aqarmapTaskAuthService;
+
+    /**
+     * ArticleController constructor.
+     * @param ArticleService                   $articleService        article service instance
+     * @param CategoryService                  $categoryService       category service instance
+     * @param AqarmapTaskAuthenticationService $authenticationService aqarmap task authentication service instance
+     */
+    public function __construct(ArticleService $articleService, CategoryService $categoryService, AqarmapTaskAuthenticationService $authenticationService)
+    {
+        $this->articleService         = $articleService;
+        $this->categoryService        = $categoryService;
+        $this->aqarmapTaskAuthService = $authenticationService;
+    }
+
+    /**
      * Listing all possible articles, or all possible belong to specific category
      * @param Request $request Htttp request instance
      * @return \Symfony\Component\HttpFoundation\Response
@@ -26,12 +58,17 @@ class ArticleController extends AbstractAqarmapTaskController
     {
         $categoryId = $request->query->get('category', null);
 
-        $articleRepository = $this->getDoctrine()
-            ->getRepository(Article::class);
         if ($categoryId) {
-            $articles = $articleRepository->getArticlesFilteredByCategory($categoryId);
+            $articles = $this->articleService->findByCategoryId($categoryId);
         } else {
-            $articles = $articleRepository->findBy([], ['publishedAt' => 'DESC']);
+            $articles = $this->articleService
+                    ->findByCriteria(
+                        [],
+                        ActiveRecordInterface::DEFAULT_COUNTER,
+                        0,
+                        ActiveRecordInterface::DESC,
+                        'publishedAt'
+                    );
         }
 
         return $this->render('article/list.html.twig', ['articles' => $articles]);
@@ -44,12 +81,9 @@ class ArticleController extends AbstractAqarmapTaskController
      */
     public function show(int $id)
     {
-        $article = $this->getDoctrine()
-            ->getRepository(Article::class)
-            ->find($id);
-
-        // check if given article already exists or not
-        if (!$article) {
+        try {
+            $article = $this->articleService->find($id);
+        } catch (NotFoundException $exception) {
             throw $this->createNotFoundException("Article not found");
         }
 
@@ -64,19 +98,17 @@ class ArticleController extends AbstractAqarmapTaskController
      */
     public function add(Request $request, SessionInterface $session)
     {
-        $currentLoginUser =
-            $session->get(AuthenticationController::LOGIN_USER_SESSION_KEY, null);
-        if (!is_null($currentLoginUser) && is_array($currentLoginUser)) {
-            $currentLoginUser = $currentLoginUser[0];
+        try {
+            $currentLoginUser = $this->aqarmapTaskAuthService->getCurrentLoginUser();
+        } catch (NotFoundException $exception) {
+            return $this->redirectToRoute('home');
         }
-        // must there be current login user plus must be admin role
-        if (!($currentLoginUser instanceof User) || $currentLoginUser->getRole() !== User::ADMIN_ROLE) {
+        // must current login user has admin role
+        if ($currentLoginUser->getRole() !== User::ADMIN_ROLE) {
             return $this->redirectToRoute('home');
         }
 
-        $categories = $this->getDoctrine()
-            ->getRepository(Category::class)
-            ->findAll();
+        $categories = $this->categoryService->findByCriteria([]);
 
         $newArticle = new Article();
 
@@ -94,15 +126,13 @@ class ArticleController extends AbstractAqarmapTaskController
                 /** @var Article $newArticle */
                 $newArticle = $form->getData();
 
-                $author = $this->getDoctrine()
-                    ->getRepository(User::class)
-                    ->find($currentLoginUser->getId());
-
-                $newArticle->setAuthor($author);
+                $newArticle->setAuthor($currentLoginUser);
                 // save new article
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($newArticle);
-                $entityManager->flush();
+                try {
+                    $this->articleService->create($newArticle);
+                } catch (NotFoundException $exception) {
+                    return $this->redirectToRoute('article_addition');
+                }
 
                 // TODO: use success flush message
                 return $this->redirectToRoute('article_info', ['id' => $newArticle->getId()]);

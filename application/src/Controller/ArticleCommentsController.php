@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Controller\Abstracts\AbstractAqarmapTaskController;
-use App\Entity\Article;
 use App\Entity\Comment;
-use App\Entity\User;
+use App\Exception\NotFoundException;
 use App\Form\ArticleCommentType;
+use App\Service\AqarmapTaskAuthenticationService;
+use App\Service\ArticleCommentService;
+use App\Service\ArticleService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -18,6 +20,34 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class ArticleCommentsController extends AbstractAqarmapTaskController
 {
     /**
+     * @var ArticleService
+     */
+    private $articleService;
+
+    /**
+     * @var ArticleCommentService
+     */
+    private $articleCommentService;
+
+    /**
+     * @var AqarmapTaskAuthenticationService
+     */
+    private $aqarmapTaskAuthService;
+
+    /**
+     * ArticleCommentsController constructor.
+     * @param ArticleService                   $articleService        article service instance
+     * @param ArticleCommentService            $articleCommentService article comment service instance
+     * @param AqarmapTaskAuthenticationService $authenticationService aqarmap task authentication service instance
+     */
+    public function __construct(ArticleService $articleService, ArticleCommentService $articleCommentService, AqarmapTaskAuthenticationService $authenticationService)
+    {
+        $this->articleService         = $articleService;
+        $this->articleCommentService  = $articleCommentService;
+        $this->aqarmapTaskAuthService = $authenticationService;
+    }
+
+    /**
      * Adding new comment under given article using it's id
      * @param int              $id      article's id value which want to add new comment under it
      * @param Request          $request Http request instance
@@ -26,22 +56,15 @@ class ArticleCommentsController extends AbstractAqarmapTaskController
      */
     public function add(int $id, Request $request, SessionInterface $session)
     {
-        $currentLoginUser =
-            $session->get(AuthenticationController::LOGIN_USER_SESSION_KEY, null);
-        if (!is_null($currentLoginUser) && is_array($currentLoginUser)) {
-            $currentLoginUser = $currentLoginUser[0];
-        }
-        // must there be current login user
-        if (!($currentLoginUser instanceof User)) {
+        try {
+            $currentLoginUser = $this->aqarmapTaskAuthService->getCurrentLoginUser();
+        } catch (NotFoundException $exception) {
             return $this->redirectToRoute('home');
         }
 
-        $article = $this->getDoctrine()
-            ->getRepository(Article::class)
-            ->find($id);
-
-        // check if given article already exists or not
-        if (!$article) {
+        try {
+            $article = $this->articleService->find($id);
+        } catch (NotFoundException $exception) {
             throw $this->createNotFoundException("Article not found");
         }
 
@@ -57,16 +80,16 @@ class ArticleCommentsController extends AbstractAqarmapTaskController
                 /** @var Comment $newComment */
                 $newComment = $form->getData();
 
-                $creator = $this->getDoctrine()
-                    ->getRepository(User::class)
-                    ->find($currentLoginUser->getId());
-
-                $newComment->setCreator($creator);
+                $newComment->setCreator($currentLoginUser);
                 // save new article's comment
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($newComment);
-                $entityManager->flush();
-
+                try {
+                    $this->articleCommentService->create($newComment);
+                } catch (NotFoundException $exception) {
+                    return $this->redirectToRoute(
+                        'article_comment_addition',
+                        ['id' => $article->getId()]
+                    );
+                }
                 // TODO: use success flush message
             }
 

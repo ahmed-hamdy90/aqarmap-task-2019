@@ -2,9 +2,9 @@
 
 namespace App\Twig;
 
-use App\Controller\AuthenticationController;
 use App\Entity\User;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use App\Exception\NotFoundException;
+use App\Service\AqarmapTaskAuthenticationService;
 use Twig\Extension\RuntimeExtensionInterface;
 
 /**
@@ -16,17 +16,17 @@ use Twig\Extension\RuntimeExtensionInterface;
 class CurrentLoginUserRuntime implements RuntimeExtensionInterface
 {
     /**
-     * @var SessionInterface
+     * @var AqarmapTaskAuthenticationService
      */
-    private $sessionManager;
+    private $aqarmapTaskAuthService;
 
     /**
      * CurrentLoginUserRuntime constructor.
-     * @param SessionInterface $session symfony session instance
+     * @param AqarmapTaskAuthenticationService $authenticationService aqarmap task authentication service instance
      */
-    public function __construct(SessionInterface $session)
+    public function __construct(AqarmapTaskAuthenticationService $authenticationService)
     {
-        $this->sessionManager = $session;
+        $this->aqarmapTaskAuthService = $authenticationService;
     }
 
     /**
@@ -36,10 +36,10 @@ class CurrentLoginUserRuntime implements RuntimeExtensionInterface
      */
     public function getCurrentLoginUser()
     {
-        $currentLoginUser =
-            $this->sessionManager
-                ->get(AuthenticationController::LOGIN_USER_SESSION_KEY, null);
-
-        return (!is_null($currentLoginUser) && is_array($currentLoginUser))? $currentLoginUser[0] : null;
+        try {
+            return $this->aqarmapTaskAuthService->getCurrentLoginUser();
+        } catch (NotFoundException $exception) {
+            return null;
+        }
     }
 }
