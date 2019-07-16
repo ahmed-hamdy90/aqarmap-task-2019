@@ -10,7 +10,6 @@ use App\Service\AqarmapTaskAuthenticationService;
 use App\Service\ArticleCommentService;
 use App\Service\ArticleService;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * ArticleCommentsController Class represent controller related to article comments operation under aqarmap task application
@@ -49,12 +48,11 @@ class ArticleCommentsController extends AbstractAqarmapTaskController
 
     /**
      * Adding new comment under given article using it's id
-     * @param int              $id      article's id value which want to add new comment under it
-     * @param Request          $request Http request instance
-     * @param SessionInterface $session Session instance
+     * @param int     $id      article's id value which want to add new comment under it
+     * @param Request $request Http request instance
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function add(int $id, Request $request, SessionInterface $session)
+    public function add(int $id, Request $request)
     {
         try {
             $currentLoginUser = $this->aqarmapTaskAuthService->getCurrentLoginUser();

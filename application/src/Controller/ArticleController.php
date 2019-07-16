@@ -12,7 +12,6 @@ use App\Service\ArticleService;
 use App\Service\CategoryService;
 use App\Service\Interfaces\ActiveRecordInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * ArticleController Class represent controller related to articles operation under aqarmap task application
@@ -92,11 +91,10 @@ class ArticleController extends AbstractAqarmapTaskController
 
     /**
      * Add new article operation
-     * @param Request          $request Htttp request instance
-     * @param SessionInterface $session Session instance
+     * @param Request $request Htttp request instance
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function add(Request $request, SessionInterface $session)
+    public function add(Request $request)
     {
         try {
             $currentLoginUser = $this->aqarmapTaskAuthService->getCurrentLoginUser();
