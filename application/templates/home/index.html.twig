@@ -26,7 +26,8 @@
                             <!-- post -->
                             {{ include('article/preview.article.html.twig', {'article': article}) }}
                             <!-- /post -->
-                            {% if loop.index > 2 and (loop.index % 2) > 0 %}
+
+                            {% if loop.index > 1 and (loop.index % 2) is same as(0) %}
                                 <div class="clearfix visible-md visible-lg"></div>
                             {% endif %}
                         {% endfor %}
