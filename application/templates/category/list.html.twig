@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <!-- SECTION -->
+    <div class="section">
+        <!-- container -->
+        <div class="container"></div>
+        <!-- /container -->
+    </div>
+    <!-- /SECTION -->
+    <!-- SECTION -->
+    <div class="section">
+        <!-- container -->
+        <div class="container">
+            <!-- row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- category widget -->
+                    <div class="aside-widget">
+                        <div class="section-title">
+                            <h2 class="title">Categories</h2>
+                        </div>
+                        <div class="category-widget">
+                            <ul>
+                                {% for category in categories %}
+                                    <li>{{ include('category/category.html.twig', {'category': category}) }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /category widget -->
+                </div>
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /SECTION -->
+{% endblock %}

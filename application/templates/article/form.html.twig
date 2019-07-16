@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <!-- SECTION -->
+    <div class="section">
+        <!-- container -->
+        <div class="container">
+            <!-- row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="section-row">
+                        <div class="section-title">
+                            <h2 class="title">New Article</h2>
+                        </div>
+                        {{ form_start(form) }}
+                        <div class="row">
+                            <div class="has-error">
+                                {{ form_errors(form) }}
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <span>{{ form_label(form.title) }}</span>
+                                    {{ form_widget(
+                                        form.title,
+                                        {'attr': {'class': 'input', 'palceholder': 'Title'}}) }}
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <span>{{ form_label(form.content) }}</span>
+                                    {{ form_widget(
+                                        form.content,
+                                        {'attr': {'class': 'input', 'palceholder': 'Content'}}) }}
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <span>{{ form_label(form.categories) }}</span>
+                                    {{ form_widget(
+                                        form.categories,
+                                        {'attr': {'class': 'form-check'}}) }}
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {{ form_row(form.save, {'attr': {'class': 'primary-button'}}) }}
+                                </div>
+                            </div>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+{% endblock %}

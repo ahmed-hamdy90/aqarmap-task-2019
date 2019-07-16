@@ -1,0 +1,43 @@
+home:
+    path: /
+    controller: App\Controller\HomeController::index
+    methods: GET
+
+article_list:
+    path: /articles
+    controller: App\Controller\ArticleController::list
+    methods: GET
+
+article_info:
+    path: /article/{id}
+    controller: App\Controller\ArticleController::show
+    methods: GET
+    requirements:
+       id: '\d+'
+
+article_addition:
+    path: /article/add
+    controller: App\Controller\ArticleController::add
+    methods: GET|POST
+
+article_comment_addition:
+    path: /article/{id}/comment/add
+    controller: App\Controller\ArticleCommentsController::add
+    methods: GET|POST
+    requirements:
+        id: '\d+'
+
+user_login:
+    path: /login
+    controller: App\Controller\AuthenticationController::login
+    methods: GET|POST
+
+user_logout:
+    path: /logout
+    controller: App\Controller\AuthenticationController::logout
+    methods: GET
+
+category_list:
+    path: /categories
+    controller: App\Controller\CategoryController::list
+    methods: GET

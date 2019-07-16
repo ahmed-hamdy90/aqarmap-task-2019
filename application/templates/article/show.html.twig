@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block header %}
+    {{ parent() }}
+    <!-- PAGE HEADER -->
+    <div id="post-header" class="page-header">
+        <div class="page-header-bg"
+             style="background-image: {{ absolute_url('images/post-1.jpg') }};"
+             data-stellar-background-ratio="0.5">
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="post-category">
+                        {% set firstCategory = article.categories|first %}
+                        <a href="{{ url('article_list', {'category': firstCategory.id}) }}">
+                            {{ firstCategory.name }}
+                        </a>
+                    </div>
+                    <h1>{{ article.title }}</h1>
+                    <ul class="post-meta">
+                        <li>{{ article.author.username }}</li>
+                        <li>{{ article.publishedAt|date("d F Y H:i:s") }}</li>
+                        <li><i class="fa fa-comments"></i> {{ article.comments|length }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /PAGE HEADER -->
+{% endblock %}
+
+{% block body %}
+    <!-- section -->
+    <div class="section">
+        <!-- container -->
+        <div class="container">
+            <!-- row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- post content -->
+                    <div class="section-row">
+                        <p>{{ article.content }}</p>
+                    </div>
+                    <!-- /post content -->
+
+                    <!-- post categories -->
+                    <div class="section-row">
+                        <div class="post-tags">
+                            <ul>
+                                <li>Categories:</li>
+                                {% for category in article.categories %}
+                                    <li>
+                                        {{ include('category/category.html.twig', {'category': category}) }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /post categories -->
+
+                    <!-- post comments -->
+                    <div class="section-row">
+                        <div class="section-title">
+                            <h3 class="title">{{ article.comments|length }} Comments</h3>
+                        </div>
+                        <div class="post-comments">
+                            <!-- comment -->
+                            {% for comment in article.comments %}
+                                {{ include('comment/comment.html.twig', {'comment': comment}) }}
+                            {% endfor %}
+                            <!-- /comment -->
+                        </div>
+                    </div>
+                    <!-- /post comments -->
+
+                    <!-- post reply -->
+                    {% if currentUser() is not null %}
+                        <div class="section-row">
+                            <div class="section-title">
+                                <h3 class="title">Leave a Comment</h3>
+                            </div>
+                            <form class="post-reply">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="section-row loadmore text-center">
+                                            <a href="{{ url('article_comment_addition', {'id': article.id}) }}"
+                                               class="primary-button">
+                                                Add New Comment
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    {% endif %}
+                    <!-- /post reply -->
+                </div>
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /SECTION -->
+{% endblock %}

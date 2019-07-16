@@ -1,0 +1,23 @@
+<div class="col-md-6">
+    <div class="post">
+        <a class="post-img" href="{{ url('article_info', {'id': article.id}) }}">
+            <img src="{{ asset('images/post-1.jpg') }}" alt=""></a>
+        <div class="post-body">
+            <div class="post-category">
+                {% set firstCategory = article.categories|first %}
+                <a href="{{ url('article_list', {'category': firstCategory.id}) }}">
+                    {{ firstCategory.name }}
+                </a>
+            </div>
+            <h3 class="post-title">
+                <a href="{{ url('article_info', {'id': article.id}) }}">
+                    {{ article.title }}
+                </a>
+            </h3>
+            <ul class="post-meta">
+                <li>{{ article.author.username }}</li>
+                <li>{{ article.publishedAt|date("d F Y H:i:s") }}</li>
+            </ul>
+        </div>
+    </div>
+</div>

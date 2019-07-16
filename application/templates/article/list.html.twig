@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <!-- SECTION -->
+    <div class="section">
+        <!-- container -->
+        <div class="container">
+            {% if currentUser() is not null and currentUser()|isUserAdmin  is same as(true) %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <a href="{{ url('article_addition') }}" class="primary-button">Add new Article</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /SECTION -->
+    <!-- SECTION -->
+    <div class="section">
+        <!-- container -->
+        <div class="container">
+            <!-- row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="section-title">
+                                <h2 class="title">Posts</h2>
+                            </div>
+                        </div>
+                        {% if articles is not empty %}
+                            {% for article in articles %}
+                                <!-- post -->
+                                {{ include('article/preview.article.html.twig', {'article': article}) }}
+                                <!-- /post -->
+                                {% if loop.index > 2 and (loop.index % 2) > 0 %}
+                                    <div class="clearfix visible-md visible-lg"></div>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <h3 class="text-center">There no Articles Exists</h3>
+                        {% endif %}
+                    </div>
+                    <!-- /row -->
+                </div>
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /SECTION -->
+{% endblock %}

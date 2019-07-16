@@ -1,0 +1,6 @@
+*.log
+.vagrant/
+database/
+template/
+.idea/
+.git/

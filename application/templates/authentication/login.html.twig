@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aqarmap Task Login</title>
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" />
+    <!-- Font Awesome Icon -->
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
+    <!-- Custom stlylesheet -->
+    <link type="text/css" rel="stylesheet" href="{{ asset('css/style.css') }}" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <!-- HEADER -->
+    <header id="header">
+        <!-- NAV -->
+        <div id="nav">
+            <!-- Top Nav -->
+            <div id="nav-top">
+                <div class="container">
+                    <!-- social -->
+                    <ul class="nav-social"></ul>
+                    <!-- logo -->
+                    <div class="nav-logo">
+                        <a href="{{ url('home') }}" class="logo"><img src="{{ asset('images/logo.png') }}" alt=""></a>
+                    </div>
+                    <!-- /logo -->
+                    <!-- search & aside toggle -->
+                    <div class="nav-btns">
+                        <button class="aside-btn"><i class="fa fa-bars"></i></button>
+                        <button class="search-btn"><i class="fa fa-search"></i></button>
+                    </div>
+                    <!-- /search & aside toggle -->
+                </div>
+            </div>
+            <!-- /Top Nav -->
+            <!-- Aside Nav -->
+            <div id="nav-aside">
+                <ul class="nav-aside-menu">
+                    <li><a href="{{ url('home') }}">Home</a></li>
+                    <li><a href="{{ url('category_list') }}">Categories</a></li>
+                    <li><a href="{{ url('article_list') }}">Articles</a></li>
+                    {% if currentUser() is null %}
+                        <li><a href="{{ url('user_login') }}">Login</a></li>
+                    {% else %}
+                        <li><a href="{{ url('user_logout') }}">Logout</a></li>
+                    {% endif %}
+                </ul>
+                <button class="nav-close nav-aside-close"><span></span></button>
+            </div>
+            <!-- /Aside Nav -->
+        </div>
+        <!-- /NAV -->
+    </header>
+    <!-- /HEADER -->
+
+    <!-- SECTION -->
+    <div class="section">
+        <!-- container -->
+        <div class="container">
+            <!-- row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="section-row">
+                        <div class="section-title">
+                            <h2 class="title">Login</h2>
+                        </div>
+                        {{ form_start(form) }}
+                        <div class="row">
+                            <div class="has-error">
+                                {{ form_errors(form) }}
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <span>{{ form_label(form.username) }}</span>
+                                    {{ form_widget(
+                                        form.username,
+                                        {'attr': {'class': 'input', 'palceholder': 'Email'}}) }}
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <span>{{ form_label(form.password) }}</span>
+                                    {{ form_widget(
+                                        form.password,
+                                        {'attr': {'class': 'input', 'palceholder': 'Password'}}) }}
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {{ form_row(form.save, {'attr': {'class': 'primary-button'}}) }}
+                                </div>
+                            </div>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /SECTION -->
+    <!-- jQuery Plugins -->
+    <script src="{{ asset('javascript/jquery.min.js') }}"></script>
+    <script src="{{ asset('javascript/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('javascript/jquery.stellar.min.js') }}"></script>
+    <script src="{{ asset('javascript/main.js') }}"></script>
+</body>
+</html>

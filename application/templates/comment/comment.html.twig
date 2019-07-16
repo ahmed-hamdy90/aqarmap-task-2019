@@ -1,0 +1,12 @@
+<div class="media">
+    <div class="media-left">
+        <img class="media-object" src="{{ asset('images/avatar-3.jpg') }}" alt="">
+    </div>
+    <div class="media-body">
+        <div class="media-heading">
+            <h4>{{ comment.creator.username }}</h4>
+            <span class="time">{{ comment.addedAt|date("d F Y H:i:s") }}</span>
+        </div>
+        <p>{{ comment.content }}</p>
+    </div>
+</div>
